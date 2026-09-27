@@ -1,0 +1,175 @@
+var fs = require('fs');
+const { executeTransaction, getmultipleSP } = require('../helpers/sp-caller');
+var course = {
+    Save_course: async function (course) {
+        return executeTransaction('save_course', [JSON.stringify(course['course'])]);
+    },
+    save_course_content: async function (course) {
+        return executeTransaction('save_course_content', [JSON.stringify(course['contents'])]);
+    },
+    Student_Batch_Change: async function (student) {
+        console.log('student: ', student);
+        return executeTransaction('Student_Batch_Change', [JSON.stringify(student)]);
+    },
+    ValidateTimeSlots: async function (body) {
+        console.log('body: ', body);
+        console.log('JSON.stringify(body.timeSlots): ', JSON.stringify(body.SchduledTeacher));
+        return executeTransaction('ValidateTimeSlots', [body.Course_ID, JSON.stringify(body.SchduledTeacher), body.Start_Date, body.End_Date]);
+    },
+    Delete_course: async function (course_Id_) {
+        return executeTransaction('Delete_course', [course_Id_]);
+    },
+    Get_course: async function (course_Id_) {
+        return getmultipleSP('Get_course', [course_Id_]);
+    },
+    Get_course_content: async function (course_Id_, contentId) {
+        return getmultipleSP('Get_course_content', [course_Id_, contentId]);
+    },
+    Get_Available_Time_Slot: async function (course_Id_) {
+        return getmultipleSP('Get_Available_Time_Slot', [course_Id_]);
+    },
+    Get_All_Time_Slot: async function (course_Id_) {
+        return getmultipleSP('Get_All_Time_Slot', [course_Id_]);
+    },
+    Get_Free_Time_Slot: async function (course_Id_) {
+        return getmultipleSP('Get_Free_Time_Slot', [course_Id_]);
+    },
+    Search_course: async function (course_Name_, priceFrom, priceTo) {
+        console.log('course_Name_: ', course_Name_);
+        if (course_Name_ === undefined || course_Name_ === 'undefined')
+            course_Name_ = '';
+        !priceTo ? priceTo = 0 : priceTo;
+        !priceFrom ? priceFrom = 0 : priceFrom;
+        return executeTransaction('Search_course', [course_Name_, "", "", priceFrom, priceTo]);
+    },
+    get_course_names: async function () {
+
+        return getmultipleSP('get_course_names', []);
+    },
+    Get_All_Course_Items: async function () {
+
+        return getmultipleSP('Get_All_Course_Items', []);
+    },
+    Get_all_Batch: async function () {
+
+        return getmultipleSP('Get_all_Batch', []);
+    },
+    Get_Course_Students: async function (course_Id_) {
+        return executeTransaction('Get_Course_Students', [course_Id_]);
+    },
+    Get_Specific_Exam_Details: async function (examID) {
+        return executeTransaction('Get_Specific_Exam_Details', [examID]);
+    },
+    Get_Course_Reviews: async function (student_Id_, course_Id_) {
+        return executeTransaction('Get_Course_Reviews', [student_Id_, course_Id_]);
+    },
+    review_course: async function (params) {
+        const { studentId, courseId, rating, comments, Review_Id, Delete_Status } = params;
+        return executeTransaction('review_course', [studentId, courseId, rating, comments, Review_Id, Delete_Status]);
+    },
+    Get_Teachers_By_Course: async function (course_Id_) {
+        return executeTransaction('Get_Teachers_By_Course', [course_Id_]);
+    },
+    Delete_Course_Content: async function (content_Id) {
+        return executeTransaction('Delete_Course_Content', [content_Id]);
+    },
+    Get_Sections_By_Course: async function (course_Id_) {
+        return executeTransaction('Get_Sections_By_Course', [course_Id_]);
+    },
+    get_course_Batches: async function (course_Id_) {
+        return executeTransaction('get_course_Batches', [course_Id_]);
+    },
+    Save_Student_Exam: async function (req) {
+        const { examId, score, attemptedDate, answers } = req.body;
+        console.log('req.userId: ', req.userId);
+        return executeTransaction('Save_Student_Exam', [req.userId, examId, score, attemptedDate, answers]);
+    },
+    Update_LastAccessed_Content: async function (studentId, courseId, lastAccessedContentId) {
+        return executeTransaction('Update_LastAccessed_Content', [studentId, courseId, lastAccessedContentId]);
+    },
+    Unlock_Exam: async function (Content_ID, Exam_ID, Is_Question_Unlocked, Is_Question_Media_Unlocked, Batch_ID, Is_Answer_Unlocked) {
+        return executeTransaction('Unlock_Exam', [Content_ID, Exam_ID, Is_Question_Unlocked, Is_Question_Media_Unlocked, Batch_ID, Is_Answer_Unlocked]);
+    },
+    Update_Time_Slot: async function (studentId, courseId, Slot_Id) {
+        return executeTransaction('Update_Time_Slot', [studentId, courseId, Slot_Id]);
+    },
+    Save_VideoAttendance: async function (studentId, courseId, contentId) {
+        return executeTransaction('Save_VideoAttendance', [studentId, courseId, contentId]);
+    },
+    Get_VideoAttendance: async function (studentId, courseId, contentId, month, teacherId) {
+        return executeTransaction('Get_VideoAttendance', [studentId || 0, courseId || 0, contentId || 0, month || '', teacherId || 0]);
+    },
+    Get_course_content_By_Module: async function (course_Id_, Module_ID_) {
+        return getmultipleSP('Get_course_content_By_Module', [course_Id_, Module_ID_]);
+    },
+    Get_course_content_By_Day: async function (course_Id_, Module_ID_ = 0, Section_ID = 0, Day_Id = 0, userId = 0, isLibrary = 1, Batch_ID = 0, Is_Exam_Test = 0) {
+        console.log('userId: ', userId);
+        const visibilityType = (isLibrary == 'true' || isLibrary === true || isLibrary == 2) ? 2 : 1;
+        const moduleId = (Module_ID_ && Module_ID_ !== 'undefined' && Module_ID_ !== 'null') ? Number(Module_ID_) : 0;
+        const sectionId = (Section_ID && Section_ID !== 'undefined' && Section_ID !== 'null') ? Number(Section_ID) : 0;
+        const dayId = (Day_Id && Day_Id !== 'undefined' && Day_Id !== 'null') ? Number(Day_Id) : 0;
+        const batchId = (Batch_ID && Batch_ID !== 'undefined' && Batch_ID !== 'null') ? Number(Batch_ID) : 0;
+        const isExamTest = (Is_Exam_Test && Is_Exam_Test !== 'undefined' && Is_Exam_Test !== 'null') ? Number(Is_Exam_Test) : 0;
+        const uId = (userId && userId !== 'undefined' && userId !== 'null') ? Number(userId) : 0;
+
+        console.log('Get_course_content_By_Day params:', { course_Id_, moduleId, sectionId, dayId, uId, visibilityType, batchId, isExamTest });
+        return getmultipleSP('Get_course_content_By_Day', [course_Id_, moduleId, sectionId, dayId, uId, visibilityType, batchId, isExamTest]);
+    },
+    Get_Course_Module: async function () {
+
+        return getmultipleSP('Get_Course_Module', []);
+    },
+    Get_Course_Info: async function (course_Id_) {
+
+        return getmultipleSP('Get_Course_Info', [course_Id_]);
+    },
+    get_Examof_Course: async function (course_Id_) {
+
+        return getmultipleSP('get_Examof_Course', [course_Id_]);
+    },
+    Get_Student_List_By_Batch: async function (batch_Id) {
+
+        return getmultipleSP('Get_Student_List_By_Batch', [batch_Id]);
+    },
+    Get_Module_Of_Course: async function (course_Id_, userId) {
+
+        return getmultipleSP('Get_Module_Of_Course', [course_Id_, userId]);
+    },
+    Get_Exam_Days_By_Module: async function (userId, course_Id_, Module_ID) {
+
+        return getmultipleSP('Get_Exam_Days_By_Module', [userId, course_Id_, Module_ID]);
+    },
+    Get_Exam_Modules_By_CourseId: async function (course_Id_) {
+
+        return getmultipleSP('Get_Exam_Modules_By_CourseId', [course_Id_]);
+    },
+    Get_Student_ClassRecords: async function (course_Id_, batch_Id, studentId, isStudent = 1) {
+
+        return getmultipleSP('Get_Student_ClassRecords', [course_Id_, batch_Id, studentId, isStudent]);
+    },
+    Manage_ExamData: async function (body) {
+        const { action, exam_data_id, exam_name } = body;
+        return executeTransaction('SP_ExamData_Manage', [action, exam_data_id, exam_name]);
+    },
+    Manage_CourseExam: async function (body) {
+        const { action, course_exam_id, exam_data_id, Course_ID, duration, questions, passcount, Day } = body;
+        return executeTransaction('SP_CourseExam_Manage', [action, course_exam_id, exam_data_id, Course_ID, duration, questions, passcount, Day]);
+    },
+    Student_GetExams: async function (Course_ID) {
+        return getmultipleSP('SP_Student_GetExams', [Course_ID]);
+    },
+    Manage_Questions: async function (body) {
+        const { action, question_id, exam_data_id, course_exam_id, question_name, option1, option2, option3, option4, correct_answer } = body;
+        return executeTransaction('SP_Questions_Manage', [action, question_id, exam_data_id, course_exam_id, question_name, option1, option2, option3, option4, correct_answer]);
+    },
+    Student_GetQuestions: async function (course_exam_id) {
+        return getmultipleSP('SP_Student_GetQuestions', [course_exam_id]);
+    },
+    Bulk_Insert_Questions: async function (body) {
+        const { exam_data_id, course_exam_id, data } = body;
+        const json_data = JSON.stringify(data);
+        return executeTransaction('SP_Bulk_Insert_Questions', [exam_data_id, course_exam_id, json_data]);
+    },
+
+};
+module.exports = course;
